@@ -87,11 +87,11 @@ const finish = async () => {
       kbps = 256;
   }
 
-  kbpsRef.value = kbps;
-
   if (kbpsRefOverride.value) {
     kbps = kbpsRefOverride.value;
   }
+
+  kbpsRef.value = kbps;
 
   let mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
 
