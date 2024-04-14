@@ -9,7 +9,11 @@
 
     <a download="file.wav" :href="recordingDataURL">audio file</a>
 
-    {{ format }}
+    Format: {{ format }}
+    <br />
+    Connection type: {{ connectionRef }}
+    <br />
+    kbps result {{ kbpsRef }}
 
     <button @click="micCheck">start</button>
 
@@ -25,6 +29,8 @@ import lamejs from "lamejs";
 
 let recordingDataURL = ref("");
 let format = ref("");
+let connectionRef = ref("");
+let kbpsRef = ref();
 let recorderRef = ref<recordrtc.RecordRTCPromisesHandler>();
 
 const options = {
@@ -54,15 +60,38 @@ const finish = async () => {
 
   let channels = 1; //1 for mono or 2 for stereo
   let sampleRate = 48000; //44.1khz (normal mp3 samplerate)
-  let kbps = 128; //encode 128kbps mp3
+
+  let kbps = 256; //encode 128kbps mp3
+
+  let connection =
+    (navigator as any).connection ||
+    (navigator as any).mozConnection ||
+    (navigator as any).webkitConnection;
+
+    connectionRef.value = connection.effectiveType;
+
+  switch (connection.effectiveType) {
+    case "slow-2g":
+      kbps = 128;
+    case "2g":
+      kbps = 192;
+    case "3g":
+      kbps = 256;
+    case "4g":
+      kbps = 320;
+    default:
+      kbps = 256;
+  }
+
+  kbpsRef.value = kbps;
+
   let mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
 
   let blobSource = await recorderRef.value?.getBlob();
   if (blobSource) {
-
-      // samples = new Int16Array(44100); //one second of silence (get your data from the source you have)
-      let samples123 = await blobSource?.arrayBuffer(); //one second of silence (get your data from the source you have)
-      const samples = new Int16Array(samples123);
+    // samples = new Int16Array(44100); //one second of silence (get your data from the source you have)
+    let samples123 = await blobSource?.arrayBuffer(); //one second of silence (get your data from the source you have)
+    const samples = new Int16Array(samples123);
 
     let sampleBlockSize = 1152; //can be anything but make it a multiple of 576 to make encoders life easier
 
