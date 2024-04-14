@@ -6,17 +6,20 @@
       v-if="recordingDataURL"
       :src="recordingDataURL"
     ></audio>
-
+    <br />
     <a download="file.wav" :href="recordingDataURL">audio file</a>
-
+    <br />
     Format: {{ format }}
     <br />
     Connection type: {{ connectionRef }}
     <br />
     kbps result {{ kbpsRef }}
-
+    <br />
+    Bitrate
+    <button @click="kbpsRefOverride.current = 320">set 320</button>
+    <button @click="kbpsRefOverride.current = 128">set 128</button>
+    <br />
     <button @click="micCheck">start</button>
-
     <button @click="finish">stop</button>
 
     {{ JSON.stringify(options) }}
@@ -31,6 +34,7 @@ let recordingDataURL = ref("");
 let format = ref("");
 let connectionRef = ref("");
 let kbpsRef = ref();
+let kbpsRefOverride = ref();
 let recorderRef = ref<recordrtc.RecordRTCPromisesHandler>();
 
 const options = {
@@ -84,6 +88,10 @@ const finish = async () => {
   }
 
   kbpsRef.value = kbps;
+
+  if (kbpsRefOverride.value) {
+    kbps = kbpsRefOverride.value;
+  }
 
   let mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
 
