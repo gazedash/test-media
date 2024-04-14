@@ -7,12 +7,16 @@
       :src="recordingDataURL"
     ></audio>
 
-    <a :href="recordingDataURL">audio file</a>
+    <a download="file.wav" :href="recordingDataURL">audio file</a>
 
     {{ format }}
-    
+
     <button @click="micCheck">
-        hi
+        start
+    </button>
+
+    <button @click="finish">
+        stop
     </button>
   </div>
 </template>
@@ -22,27 +26,34 @@ import recordrtc from "recordrtc";
 
 let recordingDataURL = ref("");
 let format = ref("");
+let recorderRef = ref();
 
 const micCheck = async () => {
   let stream = await navigator.mediaDevices.getUserMedia({
-    video: true,
+    video: false,
     audio: true,
   });
   let recorder = new recordrtc.RecordRTCPromisesHandler(stream, {
-    type: "audio",
-    mimeType: "audio/wav",
     recorderType: recordrtc.StereoAudioRecorder,
+    type: 'audio',
+    mimeType: 'audio/wav',
+    disableLogs: !import.meta.env.DEV,
+    bufferSize: 4096,
+    numberOfAudioChannels: 1,
+    sampleRate: 44100,
+    desiredSampRate: 44100,
   });
-  recorder.startRecording();
+  recorderRef.value = recorder;
 
-  const sleep = (m: number) => new Promise((r) => setTimeout(r, m));
-  await sleep(3000);
-
-  await recorder.stopRecording();
-  let dataURL = await recorder.getDataURL();
-  recordingDataURL.value = dataURL;
-
-  let blob = await recorder.getBlob();
-  format.value = blob.size + " " + blob.type
+  recorderRef.value.startRecording();
 };
+
+const finish = async () => {
+await recorderRef.value.stopRecording();
+let dataURL = await recorderRef.value.getDataURL();
+recordingDataURL.value = dataURL;
+
+let blob = await recorderRef.value.getBlob();
+format.value = blob.size * 0.000001 + " " + blob.type
+}
 </script>
