@@ -72,9 +72,9 @@ const finish = async () => {
     (navigator as any).mozConnection ||
     (navigator as any).webkitConnection;
 
-    connectionRef.value = connection.effectiveType;
+    connectionRef.value = connection?.effectiveType;
 
-  switch (connection.effectiveType) {
+  switch (connection?.effectiveType) {
     case "slow-2g":
       kbps = 128;
     case "2g":
