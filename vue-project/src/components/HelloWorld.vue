@@ -37,8 +37,6 @@ const options = {
     disableLogs: !import.meta.env.DEV,
     bufferSize: 4096,
     numberOfAudioChannels: 1,
-    sampleRate: 22050,
-    desiredSampRate: 22050,
   }
 
 const micCheck = async () => {
