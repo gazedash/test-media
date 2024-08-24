@@ -68,9 +68,9 @@ const finish = async () => {
   let kbps = 256; //encode 128kbps mp3
 
   let connection =
-    (navigator as any).connection ||
-    (navigator as any).mozConnection ||
-    (navigator as any).webkitConnection;
+    (window.navigator as any).connection ||
+    (window.navigator as any).mozConnection ||
+    (window.navigator as any).webkitConnection;
 
     connectionRef.value = connection?.effectiveType;
 
